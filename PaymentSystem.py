@@ -1,35 +1,51 @@
-class UPI:
+from abc import ABC, abstractmethod
+
+class PaymentStrategy(ABC):
+    @abstractmethod
     def pay(self, amount):
-        print("Paid", amount, "using UPI")
+        pass
 
 
-class Card:
+class UPI(PaymentStrategy):
     def pay(self, amount):
-        print("Paid", amount, "using Card")
+        print("Payment of", amount, "made using UPI")
 
 
-class Cash:
+class CreditCard(PaymentStrategy):
     def pay(self, amount):
-        print("Paid", amount, "using Cash")
+        print("Payment of", amount, "made using Credit Card")
 
 
-class Payment:
-    def __init__(self, method):
-        self.method = method
-
-    def make_payment(self, amount):
-        self.method.pay(amount)
+class DebitCard(PaymentStrategy):
+    def pay(self, amount):
+        print("Payment of", amount, "made using Debit Card")
 
 
-choice = input("Enter payment method (upi/card/cash): ")
-amount = int(input("Enter amount: "))
+class PaymentProcessor:
+    def __init__(self, strategy):
+        self.strategy = strategy
 
-if choice == "upi":
-    method = UPI()
-elif choice == "card":
-    method = Card()
+    def process_payment(self, amount):
+        self.strategy.pay(amount)
+
+
+print("Payment Methods")
+print("1. UPI")
+print("2. Credit Card")
+print("3. Debit Card")
+
+choice = input("Enter your choice: ")
+amount = float(input("Enter amount: "))
+
+if choice == "1":
+    strategy = UPI()
+elif choice == "2":
+    strategy = CreditCard()
+elif choice == "3":
+    strategy = DebitCard()
 else:
-    method = Cash()
+    print("Invalid choice")
+    exit()
 
-payment = Payment(method)
-payment.make_payment(amount)
+processor = PaymentProcessor(strategy)
+processor.process_payment(amount)
