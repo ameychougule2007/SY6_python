@@ -1,36 +1,63 @@
-def line(func):
-    def show(*args):
-        print("=" * 30)
-        func(*args)
-        print("=" * 30)
-    return show
+def bold_text(func):
+    def wrapper(title, content):
+        result = func(title, content)
+        return "**" + result + "**"
+    return wrapper
 
 
 class Report:
-    count = 0
+    templates = {}
 
-    def __init__(self, title):
+    def __init__(self, title, content):
         self.title = title
-        Report.count += 1
+        self.content = content
 
     @classmethod
-    def total_reports(cls):
-        print("Total reports:", cls.count)
+    def add_template(cls, name, template):
+        cls.templates[name] = template
 
-    @line
-    def display(self):
-        print("Report Title:", self.title)
+    @classmethod
+    def get_template(cls, name):
+        return cls.templates.get(name)
+
+    def __call__(self, template_name):
+        template = self.get_template(template_name)
+        return template(self.title, self.content)
 
     def __str__(self):
-        return "Report: " + self.title
+        return self.title + "\n" + self.content
 
 
-r1 = Report("Student Report")
-r2 = Report("Library Report")
+def simple_template(title, content):
+    return title + "\n" + content
 
-r1.display()
-r2.display()
 
-print(r1)
+@bold_text
+def fancy_template(title, content):
+    return title + "\n" + content
 
-Report.total_reports()
+
+Report.add_template("simple", simple_template)
+Report.add_template("fancy", fancy_template)
+
+title = input("Enter report title: ")
+content = input("Enter report content: ")
+
+report = Report(title, content)
+
+print("\nChoose report format:")
+print("1. Simple")
+print("2. Fancy")
+
+choice = input("Enter your choice: ")
+
+if choice == "1":
+    print("\nReport:")
+    print(report("simple"))
+
+elif choice == "2":
+    print("\nReport:")
+    print(report("fancy"))
+
+else:
+    print("Invalid choice")
